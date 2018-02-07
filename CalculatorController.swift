@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  CalculatorController.swift
 //  CS193PAssignment1
 //
 //  Created by Artem Alekseev on 30/10/2017.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculatorController: UIViewController {
 
 	// MARK: - Properties
 
@@ -26,18 +26,12 @@ class ViewController: UIViewController {
 			display.text = String(newValue)
 		}
 	}
+	
+	private var brain = CalculatorBrain()
 
-	// Outlets
+	//MARK: - Outlets
+	
 	@IBOutlet weak var display: UILabel!
-
-	// MARK: - Construction
-
-	// MARK: - ViewController Lifecycle
-
-	override func viewDidLoad() {
-		super.viewDidLoad()
-
-	}
 
 	// MARK: - Actions
 
@@ -54,19 +48,18 @@ class ViewController: UIViewController {
 	}
 
 	@IBAction func performOperation(_ sender: UIButton) {
-		userIsInTheMiddleOfTyping = false
-		guard let mathematicalSymbol = sender.currentTitle else { return }
-		switch mathematicalSymbol {
-		case "π":
-			displayValue = Double.pi
-		case "√":
-			displayValue = sqrt(displayValue)
-		default:
-			break
+		if userIsInTheMiddleOfTyping {
+			brain.setOperand(displayValue)
+			userIsInTheMiddleOfTyping = false
 		}
-
+		
+		if let mathSymbol = sender.currentTitle {
+			brain.performOperation(mathSymbol)
+		}
+		
+		if let result = brain.result {
+			displayValue = result
+		}
 	}
 
-
 }
-
