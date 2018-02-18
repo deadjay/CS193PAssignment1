@@ -246,7 +246,6 @@
                                                         <state key="normal" title="="/>
                                                         <connections>
                                                             <action selector="performOperation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iLF-EH-bjd"/>
-                                                            <action selector="touchDigit:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uHb-2z-1Pd"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>

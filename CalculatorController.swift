@@ -28,6 +28,13 @@ class CalculatorController: UIViewController {
 	}
 	
 	private var brain = CalculatorBrain()
+	
+	private func isLegalFloatinPointNumber(digit: String) -> Bool {
+		guard digit == ".",
+			let contains = display.text?.contains(digit) else {return true}
+		
+		return !contains
+	}
 
 	//MARK: - Outlets
 	
@@ -36,7 +43,9 @@ class CalculatorController: UIViewController {
 	// MARK: - Actions
 
 	@IBAction func touchDigit(_ sender: UIButton) {
-		guard let digit = sender.currentTitle else { return }
+		guard let digit = sender.currentTitle,
+			isLegalFloatinPointNumber(digit: digit) else { return }
+		
 		if userIsInTheMiddleOfTyping {
 			if let textCurrentlyInDisplay = display.text {
 				display.text = textCurrentlyInDisplay + digit
@@ -54,6 +63,9 @@ class CalculatorController: UIViewController {
 		}
 		
 		if let mathSymbol = sender.currentTitle {
+			if mathSymbol.contains(".") {
+				return
+			}
 			brain.performOperation(mathSymbol)
 		}
 		

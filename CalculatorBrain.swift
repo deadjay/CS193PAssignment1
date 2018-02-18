@@ -12,8 +12,20 @@ func changeSign(operand: Double) -> Double {
 	return -operand
 }
 
+func add(operator1: Double, operator2: Double) -> Double {
+	return operator1 + operator2
+}
+
+func subtract(operator1: Double, operator2: Double) -> Double {
+	return operator1 - operator2
+}
+
 func multiply(operator1: Double, operator2: Double) -> Double {
 	return operator1 * operator2
+}
+
+func divide(operator1: Double, operator2: Double) -> Double {
+	return operator1 / operator2
 }
 
 struct CalculatorBrain {
@@ -33,12 +45,17 @@ struct CalculatorBrain {
 		"√" : Operation.unaryOperation(sqrt),
 		"cos" : Operation.unaryOperation(cos),
 		"±" : Operation.unaryOperation(changeSign),
+		"+" : Operation.binaryOperation(add),
+		"-" : Operation.binaryOperation(subtract),
 		"×" : Operation.binaryOperation(multiply),
+		"÷" : Operation.binaryOperation(divide),
 		"=" : Operation.equals,
 		"C" : Operation.clear
 	]
 
 	mutating func performOperation(_ symbol: String) {
+		
+		
 		if let operation = operations[symbol] {
 			switch operation {
 			case .constant(let value):
@@ -58,7 +75,6 @@ struct CalculatorBrain {
 			case .clear:
 				accumulator = 0.0
 			}
-
 		}
 	}
 	
