@@ -28,6 +28,10 @@ func divide(operator1: Double, operator2: Double) -> Double {
 	return operator1 / operator2
 }
 
+private func findPercentage(_ operand: Double) -> Double {
+	return operand * 0.01
+}
+
 struct CalculatorBrain {
 	private var accumulator: Double?
 
@@ -43,7 +47,11 @@ struct CalculatorBrain {
 		"π" : Operation.constant(Double.pi),
 		"e" : Operation.constant(M_E),
 		"√" : Operation.unaryOperation(sqrt),
+		"sin" : Operation.unaryOperation(sin),
 		"cos" : Operation.unaryOperation(cos),
+		"tan" : Operation.unaryOperation(tan),
+		"pow" : Operation.binaryOperation(pow),
+		"%" : Operation.unaryOperation(findPercentage),
 		"±" : Operation.unaryOperation(changeSign),
 		"+" : Operation.binaryOperation(add),
 		"-" : Operation.binaryOperation(subtract),
@@ -54,8 +62,6 @@ struct CalculatorBrain {
 	]
 
 	mutating func performOperation(_ symbol: String) {
-		
-		
 		if let operation = operations[symbol] {
 			switch operation {
 			case .constant(let value):
