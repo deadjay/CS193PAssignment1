@@ -24,6 +24,7 @@ struct CalculatorBrain {
 		case unaryOperation((Double) -> Double)
 		case binaryOperation((Double, Double) -> Double)
 		case equals
+		case clear
 	}
 
 	private var operations: [String : Operation] = [
@@ -33,7 +34,8 @@ struct CalculatorBrain {
 		"cos" : Operation.unaryOperation(cos),
 		"±" : Operation.unaryOperation(changeSign),
 		"×" : Operation.binaryOperation(multiply),
-		"=" : Operation.equals
+		"=" : Operation.equals,
+		"C" : Operation.clear
 	]
 
 	mutating func performOperation(_ symbol: String) {
@@ -53,7 +55,10 @@ struct CalculatorBrain {
 				break
 			case .equals:
 				performPendingBinaryOperation()
+			case .clear:
+				accumulator = 0.0
 			}
+
 		}
 	}
 	
