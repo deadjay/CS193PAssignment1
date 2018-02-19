@@ -10,10 +10,13 @@ import UIKit
 
 class CalculatorController: UIViewController {
 
+	//MARK: - IBOutlets
+	
+	@IBOutlet weak var display: UILabel!
+	
 	// MARK: - Properties
-
+	
 	var userIsInTheMiddleOfTyping = false
-
 	var displayValue: Double {
 		get {
 			if let displayText = display.text,
@@ -27,18 +30,15 @@ class CalculatorController: UIViewController {
 		}
 	}
 	
-	private var brain = CalculatorBrain()
+	// MARK: - Private Properties
 	
+	private var brain = CalculatorBrain()
 	private func isLegalFloatingPointNumber(_ digit: String) -> Bool {
 		guard digit == ".",
 			let contains = display.text?.contains(digit) else {return true}
 		
 		return !contains
 	}
-
-	//MARK: - Outlets
-	
-	@IBOutlet weak var display: UILabel!
 
 	// MARK: - Actions
 
@@ -70,5 +70,4 @@ class CalculatorController: UIViewController {
 			displayValue = result
 		}
 	}
-
 }
