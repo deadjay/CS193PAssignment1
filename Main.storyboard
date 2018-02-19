@@ -380,7 +380,6 @@
                     </view>
                     <connections>
                         <outlet property="display" destination="MUe-nO-jQD" id="Fnh-SL-woD"/>
-                        <outlet property="transitionalDisplay" destination="RUk-fp-S2h" id="IP8-Jo-rDD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

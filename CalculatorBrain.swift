@@ -8,69 +8,67 @@
 
 import UIKit
 
-func changeSign(operand: Double) -> Double {
-	return -operand
-}
-
-func add(operator1: Double, operator2: Double) -> Double {
-	return operator1 + operator2
-}
-
-func subtract(operator1: Double, operator2: Double) -> Double {
-	return operator1 - operator2
-}
-
-func multiply(operator1: Double, operator2: Double) -> Double {
-	return operator1 * operator2
-}
-
-func divide(operator1: Double, operator2: Double) -> Double {
-	return operator1 / operator2
-}
-
-private func findPercentage(_ operand: Double) -> Double {
-	return operand * 0.01
-}
-
 struct CalculatorBrain {
-	private var accumulator: Double?
-
+	
 	private enum Operation {
 		case constant(Double)
-		case unaryOperation((Double) -> Double)
-		case binaryOperation((Double, Double) -> Double)
+		case unary((Double) -> Double)
+		case binary((Double, Double) -> Double)
 		case equals
 		case clear
 	}
-
+		
+	private struct PendingBinaryOperation {
+		let function: (Double, Double) -> Double
+		let firstOperand: Double
+		
+		func perform(with secondOperand: Double) -> Double {
+			return function(firstOperand, secondOperand)
+		}
+	}
+	
+	// MARK: - Properties
+	
+	var result: Double? {
+		get {
+			return accumulator
+		}
+	}
+	
+	// MARK: Private Properties
+	
+	private var accumulator: Double?
+	private var pendingBinaryOperation: PendingBinaryOperation?
 	private var operations: [String : Operation] = [
-		"π" : Operation.constant(Double.pi),
-		"e" : Operation.constant(M_E),
-		"√" : Operation.unaryOperation(sqrt),
-		"sin" : Operation.unaryOperation(sin),
-		"cos" : Operation.unaryOperation(cos),
-		"tan" : Operation.unaryOperation(tan),
-		"pow" : Operation.binaryOperation(pow),
-		"%" : Operation.unaryOperation(findPercentage),
-		"±" : Operation.unaryOperation(changeSign),
-		"+" : Operation.binaryOperation(add),
-		"-" : Operation.binaryOperation(subtract),
-		"×" : Operation.binaryOperation(multiply),
-		"÷" : Operation.binaryOperation(divide),
-		"=" : Operation.equals,
-		"C" : Operation.clear
+		"π"   : Operation.constant(Double.pi),
+		"e"   : Operation.constant(M_E),
+		"√"   : Operation.unary(sqrt),
+		"sin" : Operation.unary(sin),
+		"cos" : Operation.unary(cos),
+		"tan" : Operation.unary(tan),
+		"%"   : Operation.unary( {$0 * 0.01} ),
+		"±"   : Operation.unary( {-$0} ),
+		"pow" : Operation.binary(pow),
+		"+"   : Operation.binary( {$0 + $1} ),
+		"-"   : Operation.binary( {$0 - $1} ),
+		"×"   : Operation.binary( {$0 * $1} ),
+		"÷"   : Operation.binary( {$0 / $1} ),
+		"="   : Operation.equals,
+		"C"   : Operation.clear
 	]
 
+	// MARK - Functions
+	
 	mutating func performOperation(_ symbol: String) {
 		if let operation = operations[symbol] {
 			switch operation {
 			case .constant(let value):
 				accumulator = value
-			case .unaryOperation(let function):
+			case .unary(let function):
 				if accumulator != nil {
 					accumulator = function(accumulator!)
 				}
-			case .binaryOperation(let function):
+			case .binary(let function):
 				if let acc = accumulator {
 					pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: acc)
 					accumulator = nil
@@ -84,6 +82,12 @@ struct CalculatorBrain {
 		}
 	}
 	
+	mutating func setOperand(_ operand: Double) {
+		accumulator = operand
+	}
+	
+	// MARK: - Private Functions
+	
 	mutating private func performPendingBinaryOperation() {
 		guard let pendingOperation = pendingBinaryOperation,
 			let acc = accumulator else {
@@ -92,26 +96,4 @@ struct CalculatorBrain {
 		accumulator = pendingOperation.perform(with: acc)
 		pendingBinaryOperation = nil
 	}
-
-	private var pendingBinaryOperation: PendingBinaryOperation?
-
-	private struct PendingBinaryOperation {
-		let function: (Double, Double) -> Double
-		let firstOperand: Double
-
-		func perform(with secondOperand: Double) -> Double {
-			return function(firstOperand, secondOperand)
-		}
-	}
-
-	mutating func setOperand(_ operand: Double) {
-		accumulator = operand
-	}
-
-	var result: Double? {
-		get {
-			return accumulator
-		}
-	}
-
 }
