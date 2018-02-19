@@ -8,6 +8,9 @@
 
 import UIKit
 
+
+private var descriptionText = ""
+
 func changeSign(operand: Double) -> Double {
 	return -operand
 }
@@ -33,7 +36,35 @@ private func findPercentage(_ operand: Double) -> Double {
 }
 
 struct CalculatorBrain {
-	private var accumulator: Double?
+	var resultIsPending = false
+	
+	var description = ""
+	
+	var transitionalDescription = (0.0, "", "") {
+		didSet {
+			if resultIsPending {
+				if accumulator == 0.0 {
+					description = ""
+				} else {
+					description = "\(transitionalDescription.0) \(transitionalDescription.1) ..."
+				}
+			} else {
+				description = "\(transitionalDescription.0) \(transitionalDescription.1) ="
+			}											  
+		}
+	}
+		
+	private var accumulator: Double? {
+		didSet {
+			if let acc = accumulator {
+				if resultIsPending {
+					transitionalDescription.0 = acc
+				} else {
+					transitionalDescription.1 = "\(acc)"
+				}
+			}
+		}
+	}
 
 	private enum Operation {
 		case constant(Double)
@@ -63,6 +94,8 @@ struct CalculatorBrain {
 
 	mutating func performOperation(_ symbol: String) {
 		if let operation = operations[symbol] {
+			formatDescription()
+			
 			switch operation {
 			case .constant(let value):
 				accumulator = value
@@ -72,16 +105,23 @@ struct CalculatorBrain {
 				}
 			case .binaryOperation(let function):
 				if let acc = accumulator {
+					resultIsPending = true
+					transitionalDescription.1 = symbol
 					pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: acc)
 					accumulator = nil
 				}
-				break
 			case .equals:
 				performPendingBinaryOperation()
 			case .clear:
 				accumulator = 0.0
+				transitionalDescription = (0.0, "", "")
+				description = ""
 			}
 		}
+	}
+	
+	mutating private func formatDescription() {
+
 	}
 	
 	mutating private func performPendingBinaryOperation() {
@@ -89,8 +129,11 @@ struct CalculatorBrain {
 			let acc = accumulator else {
 				return
 		}
+		
+		resultIsPending = false
 		accumulator = pendingOperation.perform(with: acc)
 		pendingBinaryOperation = nil
+		formatDescription()
 	}
 
 	private var pendingBinaryOperation: PendingBinaryOperation?

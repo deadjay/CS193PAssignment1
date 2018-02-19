@@ -39,21 +39,25 @@ class CalculatorController: UIViewController {
 	//MARK: - Outlets
 	
 	@IBOutlet weak var display: UILabel!
+	
+	@IBOutlet weak var transitionalDisplay: UILabel!
 
 	// MARK: - Actions
 
 	@IBAction func touchDigit(_ sender: UIButton) {
 		guard let digit = sender.currentTitle,
 			isLegalFloatingPointNumber(digit) else { return }
-		
+
 		if userIsInTheMiddleOfTyping {
 			if let textCurrentlyInDisplay = display.text {
 				display.text = textCurrentlyInDisplay + digit
+				brain.transitionalDescription.1 = textCurrentlyInDisplay + digit
 			}
 		} else {
 			display.text = digit
 			userIsInTheMiddleOfTyping = true
 		}
+		transitionalDisplay.text = brain.description
 	}
 
 	@IBAction func performOperation(_ sender: UIButton) {
@@ -65,6 +69,8 @@ class CalculatorController: UIViewController {
 		if let mathSymbol = sender.currentTitle {
 			brain.performOperation(mathSymbol)
 		}
+		
+		transitionalDisplay.text = brain.description
 		
 		if let result = brain.result {
 			displayValue = result
